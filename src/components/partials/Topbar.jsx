@@ -1,11 +1,14 @@
-import React from 'react'
+import React, {useEffect} from 'react'
 import BoyImage from "../../assets/img/boy.png";
 import {useStateContext} from "../../contexts/ContextProvider.jsx";
 import axiosClient from "../../axios-client.js";
 
-function Torbar() {
+function Topbar() {
 
-    const {setUser,setToken} = useStateContext();
+    const {user,setUser,setToken} = useStateContext();
+
+
+
     //logout
     const handleLogout = (e)=>{
         e.preventDefault();
@@ -16,6 +19,8 @@ function Torbar() {
                 setToken(null);
             });
     }
+
+
     return (
         <div>
             <nav className="navbar navbar-expand navbar-light bg-navbar topbar mb-4 static-top">
@@ -27,7 +32,7 @@ function Torbar() {
                     <li className="nav-item dropdown no-arrow">
                         <a className="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <img className="img-profile rounded-circle" src={BoyImage} style={{ maxWidth: 60 }} />
-                            <span className="ml-2 d-none d-lg-inline text-white small">Maman Ketoprak</span>
+                            <span className="ml-2 d-none d-lg-inline text-white small">{user.name}</span>
                         </a>
                         <div className="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
                             <a className="dropdown-item" href="#">
@@ -55,4 +60,4 @@ function Torbar() {
     )
 }
 
-export default Torbar
+export default Topbar

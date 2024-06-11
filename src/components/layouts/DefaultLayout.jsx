@@ -1,10 +1,11 @@
-import React from 'react'
+import React, {useEffect} from 'react'
 import Sidebar from '../partials/Sidebar';
-import Torbar from '../partials/Torbar';
+import Torbar from '../partials/Topbar.jsx';
 import Footer from '../partials/Footer';
 import Dashboard from '../../views/Dashboard';
 import {useStateContext} from "../../contexts/ContextProvider.jsx";
 import {Navigate, Outlet} from "react-router-dom";
+import axiosClient from "../../axios-client.js";
 
 function DefaultLayout() {
 
@@ -14,7 +15,12 @@ function DefaultLayout() {
        return <Navigate to={'/login'}/>
     }
 
-
+    useEffect(() => {
+        axiosClient.get('user')
+            .then((data) => {
+                setUser(data.data);
+            });
+    }, []);
 
     return (
         <div>
