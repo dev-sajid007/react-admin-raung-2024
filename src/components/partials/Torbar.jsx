@@ -1,7 +1,21 @@
 import React from 'react'
 import BoyImage from "../../assets/img/boy.png";
+import {useStateContext} from "../../contexts/ContextProvider.jsx";
+import axiosClient from "../../axios-client.js";
 
 function Torbar() {
+
+    const {setUser,setToken} = useStateContext();
+    //logout
+    const handleLogout = (e)=>{
+        e.preventDefault();
+
+        axiosClient.post('/logout')
+            .then(res => {
+                setUser({});
+                setToken(null);
+            });
+    }
     return (
         <div>
             <nav className="navbar navbar-expand navbar-light bg-navbar topbar mb-4 static-top">
@@ -29,7 +43,7 @@ function Torbar() {
                                 Activity Log
                             </a>
                             <div className="dropdown-divider" />
-                            <a className="dropdown-item" href="javascript:void(0);" data-toggle="modal" data-target="#logoutModal">
+                            <a className="dropdown-item" onClick={handleLogout} >
                                 <i className="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400" />
                                 Logout
                             </a>

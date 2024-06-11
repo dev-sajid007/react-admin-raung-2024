@@ -8,11 +8,13 @@ import {Navigate, Outlet} from "react-router-dom";
 
 function DefaultLayout() {
 
-    const {user,token} = useStateContext();
+    const {user,token,setUser,setToken} = useStateContext();
 
     if (!token){
        return <Navigate to={'/login'}/>
     }
+
+
 
     return (
         <div>

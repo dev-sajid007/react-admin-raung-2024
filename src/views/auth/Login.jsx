@@ -1,7 +1,42 @@
-import React from 'react'
+import React, {useRef, useState} from 'react'
 import { Link } from 'react-router-dom'
+import axiosClient from "../../axios-client.js";
+import {useStateContext} from "../../contexts/ContextProvider.jsx";
 
 function Login() {
+  const  [errors,SetErrors] = useState(null);
+  const {setUser,setToken} = useStateContext();
+
+  const  emailRef = useRef();
+  const  passwordRef = useRef();
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const payload = {
+      email:emailRef.current.value,
+      password:passwordRef.current.value,
+    };
+    SetErrors(null);
+    axiosClient.post('/login',payload)
+        .then(({ data }) => {
+          setUser(data.user);
+          setToken(data.token);
+        })
+        .catch(err => {
+          const response = err.response;
+          if (response && response.status === 422) {
+            if (response.data.errors){
+              SetErrors(response.data.errors);
+            }
+            else{
+              SetErrors({
+                errors: [response.data.message],
+              })
+            }
+          }
+        });
+  }
+
   return (
     <div>
       <div className="container-login">
@@ -15,12 +50,19 @@ function Login() {
                       <div className="text-center">
                         <h1 className="h4 text-gray-900 mb-4">Login</h1>
                       </div>
-                      <form className="user">
+                      {errors &&
+                          <div className="alert alert-danger">
+                            {Object.keys(errors).map(key => (
+                                <p key={key}>{errors[key][0]}</p>
+                            ))}
+                          </div>
+                      }
+                      <form className="user" onSubmit={handleSubmit} >
                         <div className="form-group">
-                          <input type="email" className="form-control" id="exampleInputEmail" aria-describedby="emailHelp" placeholder="Enter Email Address" />
+                          <input ref={emailRef} type="email" className="form-control" id="exampleInputEmail" aria-describedby="emailHelp" placeholder="Enter Email Address" />
                         </div>
                         <div className="form-group">
-                          <input type="password" className="form-control" id="exampleInputPassword" placeholder="Password" />
+                          <input ref={passwordRef} type="password" className="form-control" id="exampleInputPassword" placeholder="Password" />
                         </div>
                         <div className="form-group">
                           <div className="custom-control custom-checkbox small" style={{ lineHeight: '1.5rem' }}>
@@ -30,7 +72,7 @@ function Login() {
                           </div>
                         </div>
                         <div className="form-group">
-                          <a href="index.html" className="btn btn-primary btn-block">Login</a>
+                          <button type={"submit"} className="btn btn-primary btn-block">Login</button>
                         </div>
                         <hr />
                       </form>
