@@ -3,8 +3,17 @@ import Sidebar from '../partials/Sidebar';
 import Torbar from '../partials/Torbar';
 import Footer from '../partials/Footer';
 import Dashboard from '../../views/Dashboard';
+import {useStateContext} from "../../contexts/ContextProvider.jsx";
+import {Navigate, Outlet} from "react-router-dom";
 
 function DefaultLayout() {
+
+    const {user,token} = useStateContext();
+
+    if (!token){
+       return <Navigate to={'/login'}/>
+    }
+
     return (
         <div>
             <div>
@@ -19,7 +28,7 @@ function DefaultLayout() {
                             {/* Topbar */}
                             {/* Container Fluid*/}
                             <div className="container-fluid" id="container-wrapper">
-                               <Dashboard/>
+                               <Outlet/>
                             </div>
                             {/*-Container Fluid*/}
                         </div>

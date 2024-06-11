@@ -1,7 +1,40 @@
-import React from 'react'
+import React, {useRef, useState} from 'react'
 import { Link } from 'react-router-dom'
+import axiosClient from "../../axios-client.js";
+import {useStateContext} from "../../contexts/ContextProvider.jsx";
 
 function Register() {
+
+  const  nameRef = useRef();
+  const  emailRef = useRef();
+  const  passwordRef = useRef();
+  const  confirmPasswordRef = useRef();
+  const  {setUser,setToken} = useStateContext();
+  const [errors, setErrors] = useState(null);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const payload = {
+      name:nameRef.current.value,
+      email:emailRef.current.value,
+      password:passwordRef.current.value,
+      password_confirmation:confirmPasswordRef.current.value,
+    }
+
+    axiosClient.post('/register',payload)
+    .then(({ data }) => {
+      setUser(data.user);
+      setToken(data.token);
+    })
+    .catch(err => {
+      const response = err.response;
+      if (response && response.status === 422) {
+        console.log(response.data.errors);
+        setErrors(response.data.errors);
+      }
+    });
+  }
+
   return (
     <div>
       <div className="container-login">
@@ -15,26 +48,30 @@ function Register() {
                       <div className="text-center">
                         <h1 className="h4 text-gray-900 mb-4">Register</h1>
                       </div>
-                      <form>
+                      {errors &&
+                          <div className="alert alert-danger">
+                            {Object.keys(errors).map(key => (
+                                <p key={key}>{errors[key][0]}</p>
+                            ))}
+                          </div>
+                      }
+                      <form onSubmit={handleSubmit}>
                         <div className="form-group">
-                          <label>First Name</label>
-                          <input type="text" className="form-control" id="exampleInputFirstName" placeholder="Enter First Name" />
+                          <label>Name</label>
+                          <input ref={nameRef} type="text" className="form-control" id="exampleInputFirstName" placeholder="Enter  Name" />
                         </div>
-                        <div className="form-group">
-                          <label>Last Name</label>
-                          <input type="text" className="form-control" id="exampleInputLastName" placeholder="Enter Last Name" />
-                        </div>
+
                         <div className="form-group">
                           <label>Email</label>
-                          <input type="email" className="form-control" id="exampleInputEmail" aria-describedby="emailHelp" placeholder="Enter Email Address" />
+                          <input ref={emailRef} type="email" className="form-control" id="exampleInputEmail" aria-describedby="emailHelp" placeholder="Enter Email Address" />
                         </div>
                         <div className="form-group">
                           <label>Password</label>
-                          <input type="password" className="form-control" id="exampleInputPassword" placeholder="Password" />
+                          <input ref={passwordRef} type="password" className="form-control" id="exampleInputPassword" placeholder="Password" />
                         </div>
                         <div className="form-group">
-                          <label>Repeat Password</label>
-                          <input type="password" className="form-control" id="exampleInputPasswordRepeat" placeholder="Repeat Password" />
+                          <label>Password Confirmation</label>
+                          <input ref={confirmPasswordRef} type="password" className="form-control" id="exampleInputPasswordRepeat" placeholder="Repeat Password" />
                         </div>
                         <div className="form-group">
                           <button type="submit" className="btn btn-primary btn-block">Register</button>
